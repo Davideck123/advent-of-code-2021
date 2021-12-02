@@ -5,29 +5,6 @@
 #include <numeric>
 #include <deque>
 
-class Increase {
-public:
-    bool operator()(int x);
-    int count() const { return count_; }
-private:
-    int prev_{ -1 };
-    int count_{ 0 };
-    bool first_{ true };
-};
-
-bool Increase::operator()(int x) {
-    if (!first_) {
-        if (x > prev_) {
-            prev_ = x;
-            ++count_;
-            return true;
-        }
-    }
-    else first_ = false;
-    prev_ = x;
-    return false;
-}
-
 class SumIncrease {
 public:
     SumIncrease(int elemCount) : elemCount_(elemCount) {}
@@ -62,7 +39,7 @@ bool SumIncrease::operator()(int x) {
 }
 
 void partOne(const std::vector<int>& depths) {
-    auto functor = std::for_each(depths.cbegin(), depths.cend(), Increase());
+    auto functor = std::for_each(depths.cbegin(), depths.cend(), SumIncrease(1));
     std::cout << "Part One: " << functor.count() << std::endl;
 }
 
