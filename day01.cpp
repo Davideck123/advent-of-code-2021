@@ -32,7 +32,7 @@ class SumIncrease {
 public:
     SumIncrease(int elemCount) : elemCount_(elemCount) {}
     bool operator()(int x);
-    int count() { return count_; }
+    int count() const { return count_; }
 private:
     int elemCount_;
     int prev_{ -1 };
