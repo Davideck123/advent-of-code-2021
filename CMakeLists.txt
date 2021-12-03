@@ -3,5 +3,5 @@ project(advent_of_code_2021)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(day01 day01.cpp)
-add_executable(day02 day02.cpp)
+add_executable(day01 01.cpp)
+add_executable(day02 02.cpp)
