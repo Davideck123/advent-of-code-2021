@@ -1,23 +1,23 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <map>
+#include <array>
 
-using FishMap = std::map<int, long long>;
+using FishMap = std::array<long long, 9>;
 
 void solve(FishMap& fish, int days) {
     for (int i = 0; i < days; ++i) {
         long long newFish = 0;
-        for (auto it = fish.begin(); it != fish.end(); ++it) {
-            if (it == fish.begin()) newFish = it->second;
-            else fish[it->first - 1] = it->second;
-            it->second = 0;
+        for (int j = 0; j < fish.size(); ++j) {
+            if (j == 0) newFish = fish[j];
+            else fish[j - 1] = fish[j];
+            fish[j] = 0;
         }
         fish[6] += newFish;
         fish[8] = newFish;
     }
     long long sum = 0;
-    for (auto&& x: fish) sum += x.second;
+    for (auto&& x: fish) sum += x;
     std::cout << sum << std::endl;
 }
 
@@ -25,10 +25,7 @@ void solve(FishMap& fish, int days) {
 int main(int argc, char* argv[]) {
     std::ifstream dataFile(argv[1]);
 
-    FishMap fish;
-    for (int i = 0; i < 9; ++i) {
-        fish.emplace(i, 0);
-    }
+    FishMap fish{ 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     std::string num;
     while (std::getline(dataFile, num, ',')) {
         ++fish[std::stoi(num)];
