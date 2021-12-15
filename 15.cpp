@@ -25,12 +25,16 @@ Cavern readInput(std::ifstream& in) {
     return risks;
 }
 
-bool isValid(int row, int col, int size = SIZE) {
+bool isValid(int row, int col, int size) {
     return 0 <= row && row < size && 0 <= col && col < size;
 }
 
-void search(const Cavern& risks) {
-    // Dijkstra
+int heuristics(int row, int col, int size) {
+    return (size - row) + (size - col);
+}
+
+void search(const Cavern& risks, bool astar = false) {
+    // Dijkstra / A*
     auto cmp = [] (const auto& a, const auto& b) { return a.second > b.second; };
     std::priority_queue<std::pair<Point, int>,
                         std::deque<std::pair<Point, int>>,
@@ -38,28 +42,34 @@ void search(const Cavern& risks) {
     const int UNDISCOVERED = -1;
     Cavern discovered{ risks.size(), std::vector<int>(risks.size(), UNDISCOVERED) };
 
-    queue.push({{ 0, 0 }, 0 });
+    if (astar) queue.push({{ 0, 0 }, heuristics(0, 0, (int) risks.size()) });
+    else queue.push({{ 0, 0 }, 0 });
+
     const std::vector<Point> ADJACENT{ std::make_pair(-1, 0),
                                        std::make_pair(0, -1),
                                        std::make_pair(0, 1),
                                        std::make_pair(1, 0) };
-
+    int count = 0;
     while (!queue.empty() && discovered[discovered.size() - 1][discovered.size() - 1] == UNDISCOVERED) {
         auto row = queue.top().first.first;
         auto col = queue.top().first.second;
-        auto len = queue.top().second;
+        auto len = (astar) ? queue.top().second - heuristics(row, col, (int) risks.size())  : queue.top().second;
+
         if (discovered[row][col] == UNDISCOVERED) {
             for (auto&& [i, j]: ADJACENT) {
                 if (isValid(row + i, col + j, (int) risks.size()) && discovered[row + i][col + j] == UNDISCOVERED) {
-                    queue.push({ { row + i, col + j }, len + risks[row + i][col + j] });
+                    if (astar) queue.push({ { row + i, col + j }, len + heuristics(row + i, col + j, (int) risks.size()) + risks[row + i][col + j] });
+                    else queue.push({ { row + i, col + j }, len + risks[row + i][col + j] });
                 }
             }
             discovered[row][col] = len;
         }
         queue.pop();
+        ++count;
     }
-
-    std::cout << "Length: " << discovered[discovered.size() - 1][discovered.size() - 1] << std::endl;
+    std::cout << ((astar) ? "A*" : "Dijkstra") << std::endl;
+    std::cout << "Vertices added to queue: " << count << std::endl;
+    std::cout << "Length of the shortest path: " << discovered[discovered.size() - 1][discovered.size() - 1] << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -86,3 +96,19 @@ int main(int argc, char* argv[]) {
     // partTwo
     search(risksLarge);
 }
+
+// Dijkstra partOne:
+// Vertices added to queue: 19796
+// Length of the shortest path: 811
+//
+// Dijkstra partTwo:
+// Vertices added to queue: 498993
+// Length of the shortest path: 3012
+//
+// A* partOne:
+// Vertices added to queue: 19783
+// Length of the shortest path: 811
+//
+// A* partTwo:
+// Vertices added to queue: 498976
+// Length of the shortest path: 3012
