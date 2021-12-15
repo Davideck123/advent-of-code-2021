@@ -49,7 +49,7 @@ void search(const Cavern& risks, bool astar = false) {
                                        std::make_pair(0, -1),
                                        std::make_pair(0, 1),
                                        std::make_pair(1, 0) };
-    int count = 0;
+    int count = 1;
     while (!queue.empty() && discovered[discovered.size() - 1][discovered.size() - 1] == UNDISCOVERED) {
         auto row = queue.top().first.first;
         auto col = queue.top().first.second;
@@ -57,15 +57,17 @@ void search(const Cavern& risks, bool astar = false) {
 
         if (discovered[row][col] == UNDISCOVERED) {
             for (auto&& [i, j]: ADJACENT) {
-                if (isValid(row + i, col + j, (int) risks.size()) && discovered[row + i][col + j] == UNDISCOVERED) {
-                    if (astar) queue.push({ { row + i, col + j }, len + heuristics(row + i, col + j, (int) risks.size()) + risks[row + i][col + j] });
-                    else queue.push({ { row + i, col + j }, len + risks[row + i][col + j] });
+                auto m = row + i;
+                auto n = col + j;
+                if (isValid(m, n, (int) risks.size()) && discovered[m][n] == UNDISCOVERED) {
+                    if (astar) queue.push({ { m, n }, len + heuristics(m, n, (int) risks.size()) + risks[m][n] });
+                    else queue.push({ { m, n }, len + risks[m][n] });
+                    ++count;
                 }
             }
             discovered[row][col] = len;
         }
         queue.pop();
-        ++count;
     }
     std::cout << ((astar) ? "A*" : "Dijkstra") << std::endl;
     std::cout << "Vertices added to queue: " << count << std::endl;
@@ -98,17 +100,17 @@ int main(int argc, char* argv[]) {
 }
 
 // Dijkstra partOne:
-// Vertices added to queue: 19796
+// Vertices added to queue: 19801
 // Length of the shortest path: 811
 //
 // Dijkstra partTwo:
-// Vertices added to queue: 498993
+// Vertices added to queue: 499001
 // Length of the shortest path: 3012
 //
 // A* partOne:
-// Vertices added to queue: 19783
+// Vertices added to queue: 19799
 // Length of the shortest path: 811
 //
 // A* partTwo:
-// Vertices added to queue: 498976
+// Vertices added to queue: 498999
 // Length of the shortest path: 3012
