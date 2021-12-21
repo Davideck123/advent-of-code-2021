@@ -169,35 +169,39 @@ NodePtr createNumber(const std::string& line) {
     return node;
 }
 
+void partOne(const std::vector<std::string>& lines) {
+    auto num = createNumber(lines[0]);
+    for (int i = 1; i < lines.size(); ++i) {
+        auto nextNum = createNumber(lines[i]);
+        num = std::make_unique<Node>(std::nullopt, std::move(num), std::move(nextNum));
+        num->reduce();
+    }
+    num->print();
+    std::cout << std::endl;
+    std::cout << num->magnitude() << std::endl;
+}
+
+void partTwo(const std::vector<std::string>& lines) {
+    int maxMagnitude = INT_MIN;
+    for (int i = 0; i < lines.size(); ++i) {
+        for (int j = 0; j < lines.size(); ++j) {
+            if (j != i) {
+                auto add = std::make_unique<Node>(std::nullopt, createNumber(lines[i]), createNumber(lines[j]));
+                add->reduce();
+                int magnitude = add->magnitude();
+                if (magnitude > maxMagnitude) maxMagnitude = magnitude;
+            }
+        }
+    }
+    std::cout << maxMagnitude << std::endl;
+}
+
 int main(int argc, char* argv[]) {
-    bool partOne = false;
     std::ifstream dataFile(argv[1]);
     std::vector<std::string> lines;
     std::string line;
     while (std::getline(dataFile, line)) lines.push_back(line);
-    if (partOne) {
-        auto num = createNumber(lines[0]);
-        for (int i = 1; i < lines.size(); ++i) {
-            auto nextNum = createNumber(lines[i]);
-            num = std::make_unique<Node>(std::nullopt, std::move(num), std::move(nextNum));
-            num->reduce();
-        }
-        num->print();
-        std::cout << std::endl;
-        std::cout << num->magnitude() << std::endl;
-    }
-    else {
-        int maxMagnitude = INT_MIN;
-        for (int i = 0; i < lines.size(); ++i) {
-            for (int j = 0; j < lines.size(); ++j) {
-                if (j != i) {
-                    auto add = std::make_unique<Node>(std::nullopt, createNumber(lines[i]), createNumber(lines[j]));
-                    add->reduce();
-                    int magnitude = add->magnitude();
-                    if (magnitude > maxMagnitude) maxMagnitude = magnitude;
-                }
-            }
-        }
-        std::cout << maxMagnitude << std::endl;
-    }
+    dataFile.close();
+    partOne(lines);
+    partTwo(lines);
 }
