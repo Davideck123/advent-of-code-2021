@@ -17,7 +17,7 @@ public:
 
     void print() const;
     void reduce(bool verbose = false);
-    int magnitude();
+    int magnitude() const;
 private:
     bool isReduced(int depth = 0) const;
     void explode(int depth = 0);
@@ -135,7 +135,7 @@ bool Node::split(bool used) {
     return used;
 }
 
-int Node::magnitude() {
+int Node::magnitude() const {
     int result;
     if (left_ != nullptr) result = 3 * left_->magnitude();
     if (value_.has_value()) return value_.value();
